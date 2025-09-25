@@ -1,0 +1,150 @@
+#include <iostream>
+#include <string>
+#include <vector>
+using namespace std;
+
+struct Book {
+    string title;
+    string author;
+    int year;
+};
+
+void addBook(vector<Book>& library, string title, string author, int year) {
+    Book b = {title, author, year};
+    library.push_back(b);
+}
+
+void displayLibrary(const vector<Book>& library) {
+    if (library.empty()) {
+        cout << "Library is empty\n";
+        return;
+    }
+    for (int i = 0; i < library.size(); i++) {
+        cout << i + 1 << ". " << library[i].title << " | "
+             << library[i].author << " | " << library[i].year << "\n";
+    }
+}
+
+int linearSearch(const vector<Book>& library, string title) {
+    for (int i = 0; i < library.size(); i++) {
+        if (library[i].title == title) return i;
+    }
+    return -1;
+}
+
+int binarySearch(const vector<Book>& library, string title) {
+    int left = 0, right = library.size() - 1;
+    while (left <= right) {
+        int mid = (left + right) / 2;
+        if (library[mid].title == title) return mid;
+        else if (library[mid].title < title) left = mid + 1;
+        else right = mid - 1;
+    }
+    return -1;
+}
+
+void selectionSort(vector<Book>& library) {
+    for (int i = 0; i < library.size(); i++) {
+        int minIndex = i;
+        for (int j = i + 1; j < library.size(); j++) {
+            if (library[j].title < library[minIndex].title)
+                minIndex = j;
+        }
+        swap(library[i], library[minIndex]);
+    }
+}
+
+void bubbleSort(vector<Book>& library) {
+    for (int i = 0; i < library.size() - 1; i++) {
+        for (int j = 0; j < library.size() - i - 1; j++) {
+            if (library[j].title > library[j + 1].title)
+                swap(library[j], library[j + 1]);
+        }
+    }
+}
+
+void insertionSort(vector<Book>& library) {
+    for (int i = 1; i < library.size(); i++) {
+        Book key = library[i];
+        int j = i - 1;
+        while (j >= 0 && library[j].title > key.title) {
+            library[j + 1] = library[j];
+            j--;
+        }
+        library[j + 1] = key;
+    }
+}
+
+void deleteBook(vector<Book>& library, string title) {
+    int index = linearSearch(library, title);
+    if (index != -1) {
+        library.erase(library.begin() + index);
+        cout << "Book deleted.\n";
+    } else cout << "Book not found.\n";
+}
+
+void countByAuthor(const vector<Book>& library, string author) {
+    int count = 0;
+    for (auto& b : library) {
+        if (b.author == author) count++;
+    }
+    cout << author << " has " << count << " books.\n";
+}
+
+int main() {
+    vector<Book> library;
+    int choice;
+    do {
+        cout << "\n===== Library Menu =====\n";
+        cout << "1. Add Book\n";
+        cout << "2. Display Library\n";
+        cout << "3. Linear Search\n";
+        cout << "4. Binary Search\n";
+        cout << "5. Delete Book\n";
+        cout << "6. Count Books by Author\n";
+        cout << "7. Sort (Selection)\n";
+        cout << "8. Sort (Bubble)\n";
+        cout << "9. Sort (Insertion)\n";
+        cout << "10. Exit\n";
+        cout << "Choose: ";
+        cin >> choice;
+
+        if (choice == 1) {
+            string title, author; int year;
+            cin.ignore();
+            cout << "Enter title: "; getline(cin, title);
+            cout << "Enter author: "; getline(cin, author);
+            cout << "Enter year: "; cin >> year;
+            addBook(library, title, author, year);
+        } 
+        else if (choice == 2) displayLibrary(library);
+        else if (choice == 3) {
+            string title; cin.ignore();
+            cout << "Enter title: "; getline(cin, title);
+            int idx = linearSearch(library, title);
+            if (idx != -1) cout << "Found: " << library[idx].title << "\n";
+            else cout << "Not found.\n";
+        } 
+        else if (choice == 4) {
+            string title; cin.ignore();
+            cout << "Enter title: "; getline(cin, title);
+            int idx = binarySearch(library, title);
+            if (idx != -1) cout << "Found: " << library[idx].title << "\n";
+            else cout << "Not found.\n";
+        } 
+        else if (choice == 5) {
+            string title; cin.ignore();
+            cout << "Enter title: "; getline(cin, title);
+            deleteBook(library, title);
+        } 
+        else if (choice == 6) {
+            string author; cin.ignore();
+            cout << "Enter author: "; getline(cin, author);
+            countByAuthor(library, author);
+        } 
+        else if (choice == 7) { selectionSort(library); cout << "Sorted (Selection).\n"; }
+        else if (choice == 8) { bubbleSort(library); cout << "Sorted (Bubble).\n"; }
+        else if (choice == 9) { insertionSort(library); cout << "Sorted (Insertion).\n"; }
+    } while (choice != 10);
+    return 0;
+}
